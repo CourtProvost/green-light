@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Green Light — Availability Polls</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F3EEE3;
+    --paper-2:#EAE3D2;
+    --card:#FBF9F3;
+    --ink:#1C1B17;
+    --ink-soft:#5B574C;
+    --ink-faint:#8A8474;
+    --green:#00693E;
+    --green-deep:#00442A;
+    --green-mist:#DCE8DF;
+    --gold:#A69565;
+    --bonfire:#BA5624;
+    --line:#DAD3C0;
+    --white:#FFFFFF;
+    --font-display:'Source Serif 4', Georgia, serif;
+    --font-body:'Inter', -apple-system, sans-serif;
+    --font-mono:'IBM Plex Mono', 'Courier New', monospace;
+    --radius:10px;
+    --shadow: 0 1px 2px rgba(28,27,23,0.06), 0 4px 14px rgba(28,27,23,0.05);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.5;
+  }
+  #app{min-height:100vh;}
+  a{color:var(--green-deep);}
+  button{font-family:var(--font-body);cursor:pointer;}
+  button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, [tabindex]:focus-visible{
+    outline:2px solid var(--bonfire);
+    outline-offset:2px;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:28px 20px 80px;}
+  .topbar{
+    background:var(--green-deep);
+    color:#EFEADE;
+    border-bottom:3px solid var(--gold);
+  }
+  .topbar-inner{
+    max-width:980px;margin:0 auto;padding:14px 20px;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-mark{width:22px;height:26px;flex:none;}
+  .brand-name{
+    font-family:var(--font-display);
+    font-weight:600;font-size:20px;color:#F3EEE3;letter-spacing:0.2px;
+  }
+  .brand-tag{font-size:12px;color:#BFD3C6;font-family:var(--font-mono);}
+  .brand-tag em{font-family:var(--font-display);font-style:italic;color:#EFEADE;}
+  .brand-tag .translation{display:block;font-size:11px;color:#9FB6A8;letter-spacing:0.02em;}
+  .nav-link{
+    background:none;border:1px solid rgba(243,238,227,0.35);color:#F3EEE3;
+    padding:6px 12px;border-radius:20px;font-size:13px;font-family:var(--font-mono);
+  }
+  .nav-link:hover{background:rgba(243,238,227,0.12);}
+ 
+  h1,h2,h3{font-family:var(--font-display);margin:0;color:var(--ink);}
+  .eyebrow{
+    font-family:var(--font-mono);font-size:12px;letter-spacing:0.08em;
+    text-transform:uppercase;color:var(--green-deep);margin:0 0 6px;
+  }
+ 
+  /* Home */
+  .hero{padding:36px 0 8px;}
+  .hero h1{font-size:38px;line-height:1.15;max-width:600px;}
+  .hero p{color:var(--ink-soft);max-width:520px;font-size:15.5px;}
+  .home-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:28px;}
+  @media (max-width:720px){.home-grid{grid-template-columns:1fr;}}
+  .home-card{
+    background:var(--card);border:1px solid var(--line);border-left:4px solid var(--green);
+    border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);
+  }
+  .home-card h3{font-size:19px;margin-bottom:8px;}
+  .home-card p{color:var(--ink-soft);font-size:14px;margin:0 0 14px;}
+  .code-input-row{display:flex;gap:8px;}
+  .code-input-row input{text-transform:uppercase;letter-spacing:0.08em;font-family:var(--font-mono);}
+ 
+  .recent-list{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+  .recent-item{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    border:1px solid var(--line);border-radius:8px;background:var(--white);padding:4px 6px 4px 14px;
+  }
+  .recent-item-main{flex:1;display:flex;flex-direction:column;gap:3px;cursor:pointer;padding:8px 0;min-width:0;}
+  .recent-item-main:hover .recent-title{color:var(--green-deep);text-decoration:underline;}
+  .recent-title{font-weight:600;font-size:14px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .recent-meta{font-size:12px;color:var(--ink-faint);font-family:var(--font-mono);display:flex;align-items:center;gap:6px;}
+  .recent-meta .code-badge{padding:2px 7px;font-size:11px;}
+ 
+  /* Buttons */
+  .btn{
+    display:inline-flex;align-items:center;gap:6px;justify-content:center;
+    border-radius:8px;border:1px solid var(--green-deep);
+    background:var(--green);color:#fff;font-weight:600;font-size:14px;
+    padding:10px 18px;transition:transform .05s ease, background .15s ease;
+  }
+  .btn:hover{background:var(--green-deep);}
+  .btn:active{transform:translateY(1px);}
+  .btn.secondary{background:transparent;color:var(--green-deep);border:1px solid var(--line);}
+  .btn.secondary:hover{background:var(--green-mist);border-color:var(--green);}
+  .btn.ghost{background:transparent;color:var(--ink-soft);border:none;padding:8px 4px;}
+  .btn.ghost:hover{color:var(--green-deep);}
+  .btn[disabled]{opacity:0.45;cursor:not-allowed;}
+  .btn.small{padding:6px 12px;font-size:13px;}
+  .btn.tiny{padding:4px 10px;font-size:12px;border-radius:6px;}
+ 
+  /* Forms */
+  label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.03em;}
+  label .optional{text-transform:none;font-weight:500;color:var(--ink-faint);letter-spacing:0;}
+  input[type=text], input[type=date], input[type=time], input[type=number], textarea, select{
+    width:100%;font-family:var(--font-body);font-size:14.5px;color:var(--ink);
+    border:1px solid var(--line);background:var(--white);border-radius:7px;
+    padding:9px 11px;
+  }
+  select{-webkit-appearance:none;appearance:none;background-image:linear-gradient(45deg, transparent 50%, var(--ink-soft) 50%), linear-gradient(135deg, var(--ink-soft) 50%, transparent 50%);background-position: calc(100% - 18px) center, calc(100% - 13px) center;background-size:5px 5px, 5px 5px;background-repeat:no-repeat;padding-right:30px;}
+  textarea{resize:vertical;min-height:64px;}
+  .field{margin-bottom:16px;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:640px){.field-row{grid-template-columns:1fr;}}
+  .field-hint{font-size:12.5px;color:var(--ink-faint);margin:-10px 0 14px;}
+  .radio-grid{display:flex;flex-wrap:wrap;gap:8px;}
+  .radio-pill{
+    border:1px solid var(--line);border-radius:20px;padding:7px 14px;font-size:13.5px;
+    background:var(--white);color:var(--ink-soft);
+  }
+  .radio-pill.active{background:var(--green);border-color:var(--green-deep);color:#fff;font-weight:600;}
+  .custom-min-select{width:200px;display:inline-block;margin-left:8px;}
+ 
+  /* week nav + calendar paint (create screen) */
+  .week-nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+  .week-label{font-family:var(--font-mono);font-size:13px;color:var(--ink);min-width:150px;text-align:center;font-weight:600;}
+  .week-jump{display:flex;gap:6px;align-items:center;}
+  .week-jump input[type=date]{width:auto;padding:6px 8px;font-size:13px;}
+  .paint-grid{max-height:440px;overflow-y:auto;}
+  .hours-panel{
+    display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;
+    background:var(--paper-2);border:1px solid var(--line);border-radius:8px;
+    padding:12px 14px;margin-bottom:12px;
+  }
+  .hours-panel .field{margin-bottom:0;}
+  .hours-panel .field label{margin-bottom:4px;}
+  .hours-panel input[type=time]{width:auto;padding:7px 9px;}
+  .hours-presets{display:flex;gap:6px;flex-wrap:wrap;}
+  .paint-summary-list{display:flex;flex-direction:column;gap:6px;margin-top:14px;}
+  .paint-summary-item{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:var(--white);border:1px solid var(--line);border-radius:8px;padding:8px 12px;
+  }
+  .psi-date{font-family:var(--font-mono);font-weight:600;font-size:12.5px;color:var(--ink);min-width:90px;flex:none;}
+  .psi-range{font-size:13px;color:var(--ink-soft);flex:1;}
+  .paint-summary-item.short{border-left:3px solid var(--gold);}
+  .warn-text{
+    background:#FBF6E8;border:1px dashed var(--gold);border-radius:8px;
+    padding:10px 14px;margin:10px 0 0;font-size:13px;color:var(--ink-soft);
+  }
+  .warn-tag{color:var(--bonfire);font-family:var(--font-mono);font-size:11px;}
+ 
+  /* Card / Ribbon */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin-bottom:22px;}
+  .ribbon{
+    background:var(--card);border:1px solid var(--line);border-left:6px solid var(--green);
+    border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 22px;margin-bottom:22px;
+  }
+  .ribbon-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;}
+  .ribbon h2{font-size:23px;}
+  .ribbon-meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-size:13.5px;color:var(--ink-soft);}
+  .ribbon-meta span b{color:var(--ink);font-weight:600;}
+  .ribbon-details{margin-top:10px;font-size:14px;color:var(--ink-soft);border-top:1px dashed var(--line);padding-top:10px;}
+  .code-badge-row{display:flex;align-items:center;gap:8px;}
+  .code-badge{
+    font-family:var(--font-mono);font-size:13px;background:var(--green-deep);color:#F3EEE3;
+    padding:5px 10px;border-radius:6px;letter-spacing:0.06em;
+  }
+ 
+  /* Grid (respond + results + create-paint) */
+  .grid-wrapper{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--card);}
+  table.sched{border-collapse:collapse;width:100%;}
+  table.sched th, table.sched td{border:1px solid var(--line);}
+  table.sched thead th{
+    position:sticky;top:0;background:var(--paper-2);z-index:2;
+    font-family:var(--font-mono);font-size:12px;color:var(--ink-soft);
+    padding:8px 6px;text-align:center;min-width:88px;font-weight:600;
+  }
+  table.sched thead th .dow{display:block;font-size:11px;color:var(--ink-faint);text-transform:uppercase;}
+  table.sched tbody th{
+    position:sticky;left:0;background:var(--paper-2);z-index:1;
+    font-family:var(--font-mono);font-size:12px;color:var(--ink-soft);
+    padding:6px 10px;text-align:right;white-space:nowrap;font-weight:500;
+  }
+  td.cell{
+    height:26px;min-width:88px;cursor:pointer;user-select:none;-webkit-user-select:none;
+    background:var(--white);position:relative;
+  }
+  /* create-screen paint grid: 15-min rows, borders only at the hour (solid) and half-hour (dashed) */
+  .paint-grid table.sched th, .paint-grid table.sched td{border-left:1px solid var(--line);border-right:1px solid var(--line);border-top:none;border-bottom:none;}
+  .paint-grid table.sched td.cell{height:15px;}
+  .paint-grid table.sched tr.row-hour th, .paint-grid table.sched tr.row-hour td{border-top:1px solid var(--line);}
+  .paint-grid table.sched tr.row-half th, .paint-grid table.sched tr.row-half td{border-top:1px dashed var(--line);}
+  .paint-grid table.sched tr.row-quarter th, .paint-grid table.sched tr.row-quarter td{border-top:none;}
+  .paint-grid table.sched tr:last-child th, .paint-grid table.sched tr:last-child td{border-bottom:1px solid var(--line);}
+  .paint-grid table.sched thead th{border-top:none;}
+  .paint-grid table.sched tbody th{font-size:11px;padding:2px 10px;vertical-align:top;}
+  td.cell.filled{
+    background-image: repeating-linear-gradient(135deg, var(--green) 0 3px, var(--green-deep) 3px 6px);
+    background-color:var(--green);
+  }
+  td.cell.offday{
+    background-image: repeating-linear-gradient(135deg, #EDE8DA 0 4px, #E3DCC8 4px 8px);
+    cursor:default;
+  }
+  td.cell.allday{height:44px;}
+  .grid-hint{font-size:12.5px;color:var(--ink-faint);margin:8px 2px 0;font-family:var(--font-mono);}
+  .allday-row{display:flex;flex-wrap:wrap;gap:10px;padding:16px;}
+  .allday-chip{
+    border:1px solid var(--line);border-radius:10px;padding:12px 16px;min-width:110px;text-align:center;
+    background:var(--white);cursor:pointer;user-select:none;
+  }
+  .allday-chip .dow{display:block;font-size:11px;color:var(--ink-faint);font-family:var(--font-mono);text-transform:uppercase;}
+  .allday-chip .dnum{font-family:var(--font-display);font-size:18px;margin-top:2px;}
+  .allday-chip.filled{
+    background-image: repeating-linear-gradient(135deg, var(--green) 0 3px, var(--green-deep) 3px 6px);
+    background-color:var(--green);color:#fff;
+  }
+  .allday-chip.filled .dow, .allday-chip.filled .dnum{color:#fff;}
+ 
+  /* results heat */
+  td.cell.heat0{background:var(--white);}
+  td.cell.best::after{
+    content:"";position:absolute;inset:2px;border:1.5px solid var(--gold);border-radius:2px;pointer-events:none;
+  }
+  .legend{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-soft);margin:10px 2px;font-family:var(--font-mono);}
+  .legend-swatch{width:14px;height:14px;border:1px solid var(--line);display:inline-block;border-radius:2px;}
+ 
+  .tooltip-panel{
+    background:var(--green-mist);border:1px solid var(--green);border-radius:8px;
+    padding:12px 14px;margin-top:12px;font-size:14px;
+  }
+  .tooltip-panel .who{font-weight:600;color:var(--green-deep);}
+ 
+  .best-list{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+  .best-item{
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    padding:10px 14px;border:1px solid var(--line);border-radius:8px;background:var(--card);
+  }
+  .best-item .when{font-family:var(--font-mono);font-size:13.5px;}
+  .best-item .count{font-size:13px;color:var(--green-deep);font-weight:700;}
+  .best-item.top{border-color:var(--gold);background:#FBF6E8;}
+ 
+  .respondent-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .respondent-pill{
+    font-size:12.5px;background:var(--white);border:1px solid var(--line);border-radius:14px;
+    padding:4px 10px;color:var(--ink-soft);
+  }
+  .respondent-pill .proxy{color:var(--bonfire);font-family:var(--font-mono);font-size:11px;}
+  .respondent-pill.test{border-style:dashed;border-color:var(--bonfire);}
+  .respondent-pill .test-tag{color:var(--bonfire);font-family:var(--font-mono);font-size:11px;}
+ 
+  .test-banner{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    background:#FBF0E6;border:1px dashed var(--bonfire);border-radius:8px;
+    padding:12px 16px;margin-bottom:18px;font-size:13.5px;color:var(--ink-soft);
+  }
+  .test-banner b{color:var(--bonfire);}
+  .quick-test-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;}
+  .quick-test-row .qt-label{font-size:12.5px;color:var(--ink-faint);}
+ 
+  .save-status{font-family:var(--font-mono);font-size:12.5px;color:var(--ink-faint);margin-top:10px;}
+  .save-status.saving{color:var(--bonfire);}
+  .save-status.saved{color:var(--green-deep);}
+ 
+  .toggle-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .toggle-row input[type=checkbox]{width:16px;height:16px;}
+  .toggle-row label{margin:0;text-transform:none;font-weight:500;font-size:14px;}
+ 
+  .share-box{
+    background:var(--paper-2);border:1px dashed var(--gold);border-radius:8px;padding:16px 18px;margin-top:6px;
+    font-size:13.5px;color:var(--ink-soft);
+  }
+  .share-box code{font-family:var(--font-mono);background:var(--white);padding:2px 6px;border-radius:4px;border:1px solid var(--line);}
+  .copy-feedback{font-size:12.5px;color:var(--green-deep);font-family:var(--font-mono);margin-left:8px;}
+  .code-display{
+    font-family:var(--font-mono);font-size:26px;letter-spacing:0.12em;color:var(--green-deep);
+    background:var(--white);border:1px solid var(--line);border-radius:8px;padding:10px 16px;
+    display:inline-block;font-weight:600;
+  }
+  .actions-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;align-items:center;}
+  .error-text{color:var(--bonfire);font-size:13px;margin-top:-6px;margin-bottom:12px;}
+  .empty-note{color:var(--ink-faint);font-size:14px;padding:20px;text-align:center;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+(function(){
+  "use strict";
+ 
+  // ---------- Firebase (real, shared, cross-device storage) ----------
+  const firebaseConfig = {
+    apiKey: "AIzaSyDj6nodhgWFJb55atwn9zS9CAyWfLRJjFo",
+    authDomain: "greenlight-afc5d.firebaseapp.com",
+    projectId: "greenlight-afc5d",
+    storageBucket: "greenlight-afc5d.firebasestorage.app",
+    messagingSenderId: "489044763201",
+    appId: "1:489044763201:web:fdb9c9386c3d8baec19cc0"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  // Data lives in real Firestore collections: polls/{code} and polls/{code}/responses/{slug}.
+  // The rest of this app still speaks in "poll:CODE" / "resp:CODE:SLUG" key strings (unchanged everywhere
+  // else) — these helpers translate those keys into the right document/subcollection paths.
+ 
+  const PAINT_STEP = 15; // minutes — resolution of the calendar-paint grid on the create screen
+  const DEFAULT_DAY_START = 8*60;  // 8:00 AM
+  const DEFAULT_DAY_END   = 17*60; // 5:00 PM
+ 
+  // ---------- storage helpers ----------
+  function describeFirebaseError(e){
+    const code = (e && e.code) ? e.code : 'unknown-error';
+    const msg = (e && e.message) ? e.message : String(e);
+    return code+' — '+msg;
+  }
+  function keyToRef(key){
+    const parts = key.split(':');
+    if(parts[0]==='poll' && parts[1]) return db.collection('polls').doc(parts[1]);
+    if(parts[0]==='resp' && parts[1] && parts[2]) return db.collection('polls').doc(parts[1]).collection('responses').doc(parts[2]);
+    return null;
+  }
+  async function storSet(key, val){
+    try{
+      const ref = keyToRef(key);
+      if(!ref) throw new Error('Unrecognized storage key: '+key);
+      await ref.set({ value: val, updatedAt: Date.now() });
+      return { key: key, value: val };
+    }catch(e){ console.error('storSet failed', key, e); state.lastError = describeFirebaseError(e); return null; }
+  }
+  async function storGet(key){
+    try{
+      const ref = keyToRef(key);
+      if(!ref) throw new Error('Unrecognized storage key: '+key);
+      const snap = await ref.get();
+      if(!snap.exists) return null;
+      return { key: key, value: snap.data().value };
+    }catch(e){ console.error('storGet failed', key, e); state.lastError = describeFirebaseError(e); return null; }
+  }
+  async function storList(prefix){
+    // Only ever called as storList('resp:CODE:') — list everything in that poll's responses subcollection.
+    try{
+      const m = /^resp:([^:]+):$/.exec(prefix);
+      if(!m) throw new Error('Unrecognized storage prefix: '+prefix);
+      const code = m[1];
+      const snap = await db.collection('polls').doc(code).collection('responses').get();
+      const keys = [];
+      snap.forEach(function(doc){ keys.push('resp:'+code+':'+doc.id); });
+      return { keys: keys };
+    }catch(e){ console.error('storList failed', prefix, e); state.lastError = describeFirebaseError(e); return null; }
+  }
+  async function storDelete(key){
+    try{
+      const ref = keyToRef(key);
+      if(!ref) throw new Error('Unrecognized storage key: '+key);
+      await ref.delete();
+      return { key: key, deleted:true };
+    }catch(e){ console.error('storDelete failed', key, e); state.lastError = describeFirebaseError(e); return null; }
+  }
+ 
+  async function savePoll(poll){ return await storSet('poll:'+poll.code, JSON.stringify(poll)); }
+  async function loadPoll(code){ const r = await storGet('poll:'+code); return r ? JSON.parse(r.value) : null; }
+  async function saveResponse(code, slug, data){ return await storSet('resp:'+code+':'+slug, JSON.stringify(data)); }
+  async function loadResponse(code, slug){ const r = await storGet('resp:'+code+':'+slug); return r ? JSON.parse(r.value) : null; }
+  async function loadAllResponses(code){
+    const list = await storList('resp:'+code+':');
+    if(!list || !list.keys) return [];
+    const out = [];
+    for(const k of list.keys){
+      const r = await storGet(k);
+      if(r){ try{ out.push(JSON.parse(r.value)); }catch(e){} }
+    }
+    return out;
+  }
+ 
+  // recent polls: kept in *personal* browser storage — just for this device, not visible to others
+  async function loadRecentPolls(){
+    try{ const raw = window.localStorage.getItem('greenlightRecentPolls'); return raw ? JSON.parse(raw) : []; }catch(e){ return []; }
+  }
+  async function saveRecentPolls(list){
+    try{ window.localStorage.setItem('greenlightRecentPolls', JSON.stringify(list)); }catch(e){}
+  }
+  async function rememberPoll(poll){
+    let list = await loadRecentPolls();
+    list = list.filter(function(p){ return p.code!==poll.code; });
+    list.unshift({ code: poll.code, title: poll.title, at: Date.now() });
+    if(list.length>8) list = list.slice(0,8);
+    await saveRecentPolls(list);
+    return list;
+  }
+ 
+  // ---------- utils ----------
+  function uid(n){ n=n||6; const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s=''; for(let i=0;i<n;i++) s+=chars[Math.floor(Math.random()*chars.length)]; return s; }
+  function slugify(name){
+    const s = (name||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+    return s || ('guest-'+uid(4).toLowerCase());
+  }
+  function esc(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function pad2(n){ return n<10 ? '0'+n : ''+n; }
+  function parseDate(dstr){ const [y,m,d]=dstr.split('-').map(Number); return new Date(y,m-1,d); }
+  function dateToStr(d){ return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
+  function addDaysStr(dstr, n){ const d=parseDate(dstr); d.setDate(d.getDate()+n); return dateToStr(d); }
+  function startOfWeekStr(d){
+    const day = d.getDay(); // 0=Sun..6=Sat
+    const diff = (day===0 ? -6 : 1-day); // shift back to Monday
+    const nd = new Date(d.getFullYear(), d.getMonth(), d.getDate()+diff);
+    return dateToStr(nd);
+  }
+  function weekDatesArr(weekStartStr){ const arr=[]; for(let i=0;i<7;i++) arr.push(addDaysStr(weekStartStr,i)); return arr; }
+  function visibleWeekDates(f){ const all = weekDatesArr(f.weekStart); return f.showWeekends ? all : all.slice(0,5); } // weekStart is always Monday, so slice(0,5) = Mon-Fri
+  function formatDateLabel(dstr){
+    const d = parseDate(dstr);
+    const dow = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()];
+    const mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
+    return {dow: dow, main: mon+' '+d.getDate()};
+  }
+  function formatWeekRangeLabel(weekStartStr){
+    const dates = weekDatesArr(weekStartStr);
+    const a = formatDateLabel(dates[0]), b = formatDateLabel(dates[6]);
+    return a.main+' &ndash; '+b.main;
+  }
+  function timeToMinutes(t){ const [h,m]=t.split(':').map(Number); return h*60+m; }
+  function minutesToTimeValue(mins){
+    mins = ((mins%1440)+1440)%1440;
+    return pad2(Math.floor(mins/60))+':'+pad2(mins%60);
+  }
+  function minutesToLabel(mins){
+    let h = Math.floor(mins/60), m = mins%60;
+    const ampm = h>=12 ? 'PM' : 'AM';
+    let h12 = h % 12; if(h12===0) h12=12;
+    return h12+':'+pad2(m)+' '+ampm;
+  }
+  function nowStamp(){
+    const d = new Date();
+    let h = d.getHours(), m = d.getMinutes();
+    const ampm = h>=12?'PM':'AM'; let h12=h%12; if(h12===0)h12=12;
+    return h12+':'+pad2(m)+' '+ampm;
+  }
+  function relativeStamp(ts){
+    const diffMs = Date.now()-ts;
+    const mins = Math.round(diffMs/60000);
+    if(mins < 1) return 'just now';
+    if(mins < 60) return mins+' min ago';
+    const hrs = Math.round(mins/60);
+    if(hrs < 24) return hrs+' hr'+(hrs===1?'':'s')+' ago';
+    const days = Math.round(hrs/24);
+    if(days < 14) return days+' day'+(days===1?'':'s')+' ago';
+    const d = new Date(ts);
+    return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]+' '+d.getDate();
+  }
+  function slotMinutesFor(poll){
+    if(poll.durationType==='allday') return null;
+    if(poll.durationType==='custom') return Number(poll.customMinutes)||30;
+    return Number(poll.durationType);
+  }
+  function customMinuteOptions(){
+    const opts = [];
+    for(let m=5;m<=60;m+=5) opts.push(m);
+    for(let m=75;m<=120;m+=15) opts.push(m);
+    for(let m=150;m<=480;m+=30) opts.push(m);
+    return opts;
+  }
+  function formatMinutesLabel(m){
+    if(m<60) return m+' min';
+    const h = Math.floor(m/60), rem = m%60;
+    return h+'h'+(rem? ' '+rem+'m':'');
+  }
+  function durationLabel(poll){
+    if(poll.durationType==='allday') return 'All day';
+    if(poll.durationType==='custom') return formatMinutesLabel(Number(poll.customMinutes)||30)+' (custom)';
+    return poll.durationType+' min';
+  }
+  function isSlotValidForDate(dateObj, t){
+    return (dateObj.blocks||[]).some(function(b){
+      const s = timeToMinutes(b.start), e = timeToMinutes(b.end);
+      return t>=s && t<e;
+    });
+  }
+  function buildFineSlots(poll){
+    // Always at 15-minute resolution, regardless of meeting length — this is the grid respondents
+    // paint their availability onto, independent of how long the actual meeting will run.
+    if(poll.durationType==='allday') return null;
+    const set = new Set();
+    (poll.dates||[]).forEach(function(dObj){
+      (dObj.blocks||[]).forEach(function(b){
+        let t = timeToMinutes(b.start), end = timeToMinutes(b.end);
+        if(t>=end) return;
+        while(t < end){ set.add(t); t += PAINT_STEP; }
+      });
+    });
+    return Array.from(set).sort(function(a,b){ return a-b; });
+  }
+  function requiredTicks(meetingMinutes){ return Math.max(1, Math.ceil(meetingMinutes / PAINT_STEP)); }
+  function requiredSpan(meetingMinutes){ return requiredTicks(meetingMinutes) * PAINT_STEP; }
+  function candidateStartsForDate(dateObj, meetingMinutes){
+    const span = requiredSpan(meetingMinutes);
+    const starts = [];
+    (dateObj.blocks||[]).forEach(function(b){
+      const s = timeToMinutes(b.start), e = timeToMinutes(b.end);
+      for(let t=s; t+span<=e; t+=PAINT_STEP) starts.push(t);
+    });
+    return starts;
+  }
+  function respondentCoversWindow(selSet, date, start, meetingMinutes){
+    const ticks = requiredTicks(meetingMinutes);
+    for(let i=0;i<ticks;i++){
+      if(!selSet.has(date+'|'+(start+i*PAINT_STEP))) return false;
+    }
+    return true;
+  }
+  function bestMeetingWindows(poll, responses, limit){
+    const meetingMinutes = slotMinutesFor(poll);
+    const responseSets = responses.map(function(r){ return new Set(r.selections||[]); });
+    const results = [];
+    (poll.dates||[]).forEach(function(dObj){
+      candidateStartsForDate(dObj, meetingMinutes).forEach(function(start){
+        const count = responseSets.filter(function(s){ return respondentCoversWindow(s, dObj.date, start, meetingMinutes); }).length;
+        if(count>0) results.push({ date: dObj.date, start: start, end: start+meetingMinutes, count: count });
+      });
+    });
+    results.sort(function(a,b){ return b.count-a.count || (a.date+a.start).localeCompare(b.date+b.start); });
+    return limit ? results.slice(0, limit) : results;
+  }
+  function windowSummary(poll){
+    if(poll.durationType==='allday') return null;
+    const flat = [];
+    (poll.dates||[]).forEach(function(d){ (d.blocks||[]).forEach(function(b){ flat.push(b); }); });
+    if(!flat.length) return null;
+    const allSame = (poll.dates||[]).every(function(d){
+      return (d.blocks||[]).length===1 && d.blocks[0].start===flat[0].start && d.blocks[0].end===flat[0].end;
+    });
+    if(allSame) return minutesToLabel(timeToMinutes(flat[0].start))+' &ndash; '+minutesToLabel(timeToMinutes(flat[0].end));
+    return 'Varies by day &mdash; see grid below';
+  }
+ 
+  // ---------- calendar-paint helpers (create screen) ----------
+  function paintRowsFor(f){
+    const rows = [];
+    const start = (typeof f.dayStart==='number') ? f.dayStart : DEFAULT_DAY_START;
+    const end = (typeof f.dayEnd==='number') ? f.dayEnd : DEFAULT_DAY_END;
+    for(let m=start;m<end;m+=PAINT_STEP) rows.push(m);
+    return rows;
+  }
+  function rowKind(m){
+    const mod = m%60;
+    if(mod===0) return 'hour';
+    if(mod===30) return 'half';
+    return 'quarter';
+  }
+  function blocksFromPaint(date, selections){
+    const mins = [];
+    selections.forEach(function(id){
+      const i = id.indexOf('|');
+      const d = id.slice(0,i), rest = id.slice(i+1);
+      if(d===date && rest!=='allday') mins.push(Number(rest));
+    });
+    mins.sort(function(a,b){ return a-b; });
+    const blocks = [];
+    let curStart=null, curEnd=null;
+    mins.forEach(function(m){
+      if(curStart===null){ curStart=m; curEnd=m+PAINT_STEP; }
+      else if(m===curEnd){ curEnd=m+PAINT_STEP; }
+      else { blocks.push({start:curStart,end:curEnd}); curStart=m; curEnd=m+PAINT_STEP; }
+    });
+    if(curStart!==null) blocks.push({start:curStart,end:curEnd});
+    return blocks.map(function(b){ return {start:minutesToTimeValue(b.start), end:minutesToTimeValue(b.end)}; });
+  }
+  function datesFromPaintSelections(selections, isAllDay){
+    const dateSet = new Set();
+    selections.forEach(function(id){ dateSet.add(id.slice(0, id.indexOf('|'))); });
+    const dates = Array.from(dateSet).sort();
+    return dates.map(function(date){
+      if(isAllDay) return {date:date, blocks:[]};
+      return {date:date, blocks: blocksFromPaint(date, selections)};
+    });
+  }
+  function formMeetingMinutes(f){
+    if(f.durationType==='allday') return null;
+    if(f.durationType==='custom') return Number(f.customMinutes)||30;
+    return Number(f.durationType);
+  }
+  function paintSummaryHtml(f){
+    const isAllDay = f.durationType==='allday';
+    const dates = datesFromPaintSelections(f.paintSelections, isAllDay);
+    if(!dates.length) return '<p class="empty-note" style="padding:12px 0;">Nothing marked yet &mdash; click, or click and drag, on the calendar above.</p>';
+    const meetingMinutes = formMeetingMinutes(f);
+    const shortDates = new Set();
+    if(meetingMinutes){
+      dates.forEach(function(d){
+        const tooShort = d.blocks.some(function(b){ return (timeToMinutes(b.end)-timeToMinutes(b.start)) < meetingMinutes; });
+        if(tooShort) shortDates.add(d.date);
+      });
+    }
+    const warnBanner = shortDates.size ? ('<p class="warn-text">&#9888; Heads up &mdash; '+(shortDates.size===1?'one of the windows':'some of the windows')+' marked below '+(shortDates.size===1?'is':'are')+' shorter than your '+formatMinutesLabel(meetingMinutes)+' meeting. That\'s fine if you\'re flexible, just flagging it in case it was a mis-click.</p>') : '';
+    return warnBanner + '<div class="paint-summary-list">' + dates.map(function(d){
+      const lbl = formatDateLabel(d.date);
+      const isShort = shortDates.has(d.date);
+      const rangeText = isAllDay ? 'All day' : d.blocks.map(function(b){
+        return minutesToLabel(timeToMinutes(b.start))+'&ndash;'+minutesToLabel(timeToMinutes(b.end));
+      }).join(', ');
+      return '<div class="paint-summary-item'+(isShort?' short':'')+'"><span class="psi-date">'+lbl.dow+' '+lbl.main+'</span><span class="psi-range">'+rangeText+(isShort?' <span class="warn-tag">&#9888; short for '+formatMinutesLabel(meetingMinutes)+'</span>':'')+'</span><button class="btn ghost tiny" data-action="clear-date-paint" data-val="'+esc(d.date)+'" title="Clear this date">&times;</button></div>';
+    }).join('') + '</div>';
+  }
+ 
+  function paintSelectionsFromPoll(poll){
+    const isAllDay = poll.durationType==='allday';
+    const sel = new Set();
+    (poll.dates||[]).forEach(function(d){
+      if(isAllDay){ sel.add(d.date+'|allday'); return; }
+      (d.blocks||[]).forEach(function(b){
+        let t = timeToMinutes(b.start); const end = timeToMinutes(b.end);
+        while(t < end){ sel.add(d.date+'|'+t); t += PAINT_STEP; }
+      });
+    });
+    return sel;
+  }
+  function formFromPoll(poll){
+    const isAllDay = poll.durationType==='allday';
+    const dateStrs = (poll.dates||[]).map(function(d){ return d.date; }).sort();
+    const earliest = dateStrs.length ? dateStrs[0] : dateToStr(new Date());
+    let dayStart = DEFAULT_DAY_START, dayEnd = DEFAULT_DAY_END, showWeekends = false;
+    if(!isAllDay){
+      let minT = null, maxT = null;
+      (poll.dates||[]).forEach(function(d){
+        const dow = parseDate(d.date).getDay();
+        if(dow===0 || dow===6) showWeekends = true;
+        (d.blocks||[]).forEach(function(b){
+          const s = timeToMinutes(b.start), e = timeToMinutes(b.end);
+          if(minT===null || s<minT) minT=s;
+          if(maxT===null || e>maxT) maxT=e;
+        });
+      });
+      if(minT!==null) dayStart = Math.min(DEFAULT_DAY_START, minT);
+      if(maxT!==null) dayEnd = Math.max(DEFAULT_DAY_END, maxT);
+    } else {
+      (poll.dates||[]).forEach(function(d){ const dow = parseDate(d.date).getDay(); if(dow===0 || dow===6) showWeekends = true; });
+    }
+    return {
+      title: poll.title||'', location: poll.location||'', details: poll.details||'',
+      durationType: poll.durationType||'60', customMinutes: poll.customMinutes||30,
+      weekStart: startOfWeekStr(parseDate(earliest)),
+      dayStart: dayStart, dayEnd: dayEnd,
+      hoursCustomizeOpen:true, showWeekends: showWeekends,
+      paintSelections: paintSelectionsFromPoll(poll)
+    };
+  }
+  let state = {
+    view:'home', // home | create | share | respond | results
+    code:'',
+    poll:null,
+    editingCode:null, // set when the create screen is being used to edit an existing poll rather than start a new one
+    joinCode:'',
+    joinError:'',
+    // create form
+    form:{
+      title:'', location:'', details:'',
+      durationType:'60', customMinutes:30,
+      weekStart: startOfWeekStr(new Date()),
+      dayStart: DEFAULT_DAY_START, dayEnd: DEFAULT_DAY_END,
+      hoursCustomizeOpen:true, showWeekends:false,
+      paintSelections:new Set() // 'YYYY-MM-DD|minutes' or 'YYYY-MM-DD|allday'
+    },
+    createError:'',
+    // respond
+    yourName:'', isProxy:false, proxyName:'', isTestIdentity:false,
+    mySelections:new Set(),
+    identityLocked:false,
+    saveState:'idle', // idle|saving|saved
+    // results
+    allResponses:[],
+    activeCellInfo:null,
+    // share
+    copyMsg:'',
+    // home
+    recentPolls:[],
+    // surfaced storage/network errors, shown as a dismissible banner instead of failing silently
+    lastError:''
+  };
+ 
+  const app = document.getElementById('app');
+  function render(){ app.innerHTML = renderView(); attachHandlers(); }
+ 
+  // ---------- top bar ----------
+  function topbar(){
+    return '<div class="topbar"><div class="topbar-inner">'
+      +'<div class="brand">'
+        +'<svg class="brand-mark" viewBox="0 0 22 26"><polygon points="11,0 21,15 15,15 21,26 1,26 7,15 1,15" fill="#F3EEE3"/></svg>'
+        +'<div><div class="brand-name">Green Light</div><div class="brand-tag"><em>Hora communis, facile inventa.</em><span class="translation">A common hour, easily found.</span></div></div>'
+      +'</div>'
+      +(state.view!=='home' ? '<button class="nav-link" data-action="go-home">&larr; Home</button>' : '')
+      +'</div></div>';
+  }
+ 
+  // ---------- views ----------
+  function renderView(){
+    let body='';
+    if(state.view==='home') body = viewHome();
+    else if(state.view==='create') body = viewCreate();
+    else if(state.view==='share') body = viewShare();
+    else if(state.view==='respond') body = viewRespond();
+    else if(state.view==='results') body = viewResults();
+    const errorBanner = state.lastError ? (''
+      +'<div class="wrap" style="padding-top:14px;padding-bottom:0;">'
+        +'<div class="test-banner" style="border-color:var(--bonfire);background:#FBEAE6;">'
+          +'<span><b>Something didn\'t save or load correctly:</b> '+esc(state.lastError)+'</span>'
+          +'<button class="btn secondary tiny" data-action="dismiss-error">Dismiss</button>'
+        +'</div>'
+      +'</div>'
+    ) : '';
+    return topbar() + errorBanner + '<div class="wrap">' + body + '</div>';
+  }
+ 
+  function viewHome(){
+    return ''
+    +'<div class="hero">'
+      +'<h1>Find the time that works for everyone.</h1>'
+      +'<p>Set the meeting details once, drag across a calendar to mark the dates and times you\'re considering, and watch the best slot rise to the top &mdash; automatically saved as people respond.</p>'
+    +'</div>'
+    +'<div class="home-grid">'
+      +'<div class="home-card">'
+        +'<h3>Start a new poll</h3>'
+        +'<p>Set the title, duration, location, and the dates you\'re considering.</p>'
+        +'<button class="btn" data-action="new-poll">Create a poll</button>'
+      +'</div>'
+      +'<div class="home-card">'
+        +'<h3>Have a poll code?</h3>'
+        +'<p>Enter the 6-character code you were sent to mark your availability or view results.</p>'
+        +'<div class="code-input-row">'
+          +'<input type="text" id="join-code" maxlength="8" placeholder="e.g. 7XQK2M" value="'+esc(state.joinCode)+'">'
+          +'<button class="btn secondary" data-action="join-code">Go</button>'
+        +'</div>'
+        +(state.joinError ? '<p class="error-text">'+esc(state.joinError)+'</p>' : '')
+      +'</div>'
+    +'</div>'
+    + recentPollsSection();
+  }
+ 
+  function recentPollsSection(){
+    if(!state.recentPolls || !state.recentPolls.length) return '';
+    return ''
+    +'<div class="card" style="margin-top:22px;">'
+      +'<p class="eyebrow">On this device</p>'
+      +'<h3 style="font-size:18px;margin-bottom:4px;">Recent polls</h3>'
+      +'<p style="color:var(--ink-soft);font-size:13.5px;margin:0 0 4px;">Polls you\'ve created or opened here &mdash; only visible on this browser.</p>'
+      +'<div class="recent-list">'
+        + state.recentPolls.map(function(p){
+            return '<div class="recent-item">'
+              +'<div class="recent-item-main" data-action="open-recent" data-val="'+esc(p.code)+'">'
+                +'<span class="recent-title">'+esc(p.title)+'</span>'
+                +'<span class="recent-meta"><span class="code-badge">'+esc(p.code)+'</span> &middot; '+relativeStamp(p.at)+'</span>'
+              +'</div>'
+              +'<button class="btn ghost tiny" data-action="remove-recent" data-val="'+esc(p.code)+'" title="Remove from this list">&times;</button>'
+            +'</div>';
+          }).join('')
+      +'</div>'
+    +'</div>';
+  }
+ 
+  function weekNavHtml(f){
+    const isAllDay = f.durationType==='allday';
+    const visible = visibleWeekDates(f);
+    const label = formatDateLabel(visible[0]).main+' &ndash; '+formatDateLabel(visible[visible.length-1]).main;
+    return '<div class="week-nav">'
+      +'<button class="btn secondary tiny" data-action="prev-week">&larr; Prev week</button>'
+      +'<span class="week-label">'+label+'</span>'
+      +'<button class="btn secondary tiny" data-action="next-week">Next week &rarr;</button>'
+      +'<button class="btn ghost tiny" data-action="today-week">Today</button>'
+      +'<span class="week-jump"><input type="date" id="f-jump-date"><button class="btn secondary tiny" data-action="jump-week">Go to date</button></span>'
+      +'<button class="btn ghost tiny" data-action="toggle-weekends">'+(f.showWeekends?'Hide weekends':'Show weekends')+'</button>'
+      +(!isAllDay ? '<button class="btn ghost tiny" data-action="toggle-customize-hours">'+(f.hoursCustomizeOpen?'Hide hours':'Customize hours')+'</button>' : '')
+    +'</div>'
+    + (!isAllDay && f.hoursCustomizeOpen ? hoursPanelHtml(f) : '');
+  }
+ 
+  function hoursPanelHtml(f){
+    return '<div class="hours-panel">'
+      +'<div class="field"><label>Earliest time shown</label><input type="time" id="f-day-start" value="'+minutesToTimeValue(f.dayStart)+'"></div>'
+      +'<div class="field"><label>Latest time shown</label><input type="time" id="f-day-end" value="'+minutesToTimeValue(f.dayEnd===1440?0:f.dayEnd)+'"></div>'
+      +'<div class="hours-presets">'
+        +'<button class="btn secondary tiny" data-action="hours-preset" data-start="420" data-end="1020">7am&ndash;5pm</button>'
+        +'<button class="btn secondary tiny" data-action="hours-preset" data-start="540" data-end="1080">9am&ndash;6pm</button>'
+        +'<button class="btn secondary tiny" data-action="hours-preset" data-start="0" data-end="1440">Full 24 hours</button>'
+      +'</div>'
+    +'</div>';
+  }
+ 
+  function paintGridHtml(f){
+    const isAllDay = f.durationType==='allday';
+    const weekDates = visibleWeekDates(f);
+    if(isAllDay){
+      return '<div class="allday-row">' + weekDates.map(function(d){
+        const lbl = formatDateLabel(d);
+        const slotId = d+'|allday';
+        const filled = f.paintSelections.has(slotId);
+        return '<div class="allday-chip'+(filled?' filled':'')+'" data-slot="'+slotId+'" data-action="paintcell">'
+          +'<span class="dow">'+lbl.dow+'</span><span class="dnum">'+lbl.main+'</span></div>';
+      }).join('') + '</div>';
+    }
+    const rows = paintRowsFor(f);
+    return '<div class="grid-wrapper paint-grid"><table class="sched"><thead><tr><th></th>'
+      + weekDates.map(function(d){ const lbl=formatDateLabel(d); return '<th><span class="dow">'+lbl.dow+'</span>'+lbl.main+'</th>'; }).join('')
+      + '</tr></thead><tbody>'
+      + rows.map(function(t){
+          const kind = rowKind(t);
+          const rowClass = 'row-'+kind;
+          const label = kind==='hour' ? minutesToLabel(t) : '';
+          return '<tr class="'+rowClass+'"><th>'+label+'</th>' + weekDates.map(function(d){
+            const slotId = d+'|'+t;
+            const filled = f.paintSelections.has(slotId);
+            return '<td class="cell'+(filled?' filled':'')+'" data-slot="'+slotId+'" data-action="paintcell" title="'+minutesToLabel(t)+'"></td>';
+          }).join('') + '</tr>';
+        }).join('')
+      + '</tbody></table></div>';
+  }
+ 
+  function viewCreate(){
+    const f = state.form;
+    const isEditing = !!state.editingCode;
+    const durations = [['allday','All Day'],['30','30 min'],['60','60 min'],['90','90 min'],['120','120 min'],['custom','Custom']];
+    return ''
+    +'<div class="card">'
+      +'<p class="eyebrow">'+(isEditing?'Editing poll &middot; '+state.editingCode:'New poll')+'</p>'
+      +'<h2>'+(isEditing?'Edit your availability poll':'Set up your availability poll')+'</h2>'
+      +(isEditing ? '<p class="field-hint" style="margin-top:8px;">Anyone who\'s already responded keeps their answers. If you remove a date or time they picked, though, that particular pick will just quietly drop out of the results.</p>' : '')
+      +'<div class="field" style="margin-top:18px;">'
+        +'<label>Meeting / event title</label>'
+        +'<input type="text" id="f-title" placeholder="e.g. Faculty Search Committee — Round 2" value="'+esc(f.title)+'">'
+      +'</div>'
+      +'<div class="field">'
+        +'<label>Duration</label>'
+        +'<div class="radio-grid">'
+          +durations.map(function(d){ return '<button class="radio-pill'+(f.durationType===d[0]?' active':'')+'" data-action="set-duration" data-val="'+d[0]+'">'+d[1]+'</button>'; }).join('')
+        +'</div>'
+        +(f.durationType==='custom' ? (''
+          +'<select class="custom-min-select" id="f-custom-min">'
+            + customMinuteOptions().map(function(m){ return '<option value="'+m+'"'+(Number(f.customMinutes)===m?' selected':'')+'>'+formatMinutesLabel(m)+'</option>'; }).join('')
+          +'</select>'
+        ) : '')
+      +'</div>'
+      +'<div class="field">'
+        +'<label>Dates &amp; Times Under Consideration</label>'
+        +'<p class="field-hint" style="margin-top:-2px;">Click, or click and drag, across the calendar to mark what you\'d like people to vote on. Navigate to other weeks to add more &mdash; everything you\'ve marked is kept.</p>'
+        + weekNavHtml(f)
+        + paintGridHtml(f)
+        +'<p class="field-hint" style="margin:8px 2px 0;">Tip: each hour row is really four 15-minute slots stacked together &mdash; the dashed line marks the half hour, and you can click just above or below it to select the quarter-hours too.</p>'
+        +'<div id="paint-summary">'+paintSummaryHtml(f)+'</div>'
+      +'</div>'
+      +'<div class="field-row">'
+        +'<div class="field"><label>Location (or "Virtual")</label><input type="text" id="f-location" placeholder="e.g. Rockefeller 003, or Zoom" value="'+esc(f.location)+'"></div>'
+        +'<div class="field"><label>Details <span class="optional">(Optional)</span></label><textarea id="f-details" placeholder="Agenda, background, dial-in info&hellip;">'+esc(f.details)+'</textarea></div>'
+      +'</div>'
+      +(state.createError ? '<p class="error-text">'+esc(state.createError)+'</p>' : '')
+      +'<div class="actions-row">'
+        +'<button class="btn" data-action="create-poll">'+(isEditing?'Save changes':'Create poll')+'</button>'
+        +'<button class="btn ghost" data-action="'+(isEditing?'cancel-edit':'go-home')+'">Cancel</button>'
+      +'</div>'
+    +'</div>';
+  }
+ 
+  function pollRibbon(poll, opts){
+    opts = opts || {};
+    const winSummary = windowSummary(poll);
+    return ''
+    +'<div class="ribbon">'
+      +'<div class="ribbon-top">'
+        +'<div><p class="eyebrow">'+ (opts.eyebrow||'Availability poll') +'</p><h2>'+esc(poll.title)+'</h2></div>'
+        +'<div class="code-badge-row"><span class="code-badge">Code: '+poll.code+'</span>'
+          +(opts.showShare ? '<button class="btn secondary tiny" data-action="go-share">Share</button>' : '')
+          +(opts.showEdit ? '<button class="btn secondary tiny" data-action="edit-poll">Edit poll</button>' : '')
+        +'</div>'
+      +'</div>'
+      +'<div class="ribbon-meta">'
+        +'<span>Duration: <b>'+durationLabel(poll)+'</b></span>'
+        +'<span>Location: <b>'+esc(poll.location||'&mdash;')+'</b></span>'
+        +(winSummary ? '<span>Window: <b>'+winSummary+'</b></span>' : '')
+      +'</div>'
+      +(poll.details ? '<div class="ribbon-details">'+esc(poll.details)+'</div>' : '')
+    +'</div>';
+  }
+ 
+  function shareMessageTemplate(poll){
+    return 'Please mark your availability for "'+poll.title+'":\n\n'
+      + 'Link: https://dartmouth-green-light.netlify.app/\n'
+      + 'Poll code: '+poll.code+'\n\n'
+      + 'It takes about a minute \u2014 click or drag across the times that work for you. It saves automatically, so there\'s no submit button to look for.';
+  }
+ 
+  function viewShare(){
+    const poll = state.poll;
+    if(!poll) return '<div class="empty-note">Loading poll&hellip;</div>';
+    return pollRibbon(poll, {eyebrow:'Poll created', showEdit:true})
+      + '<div class="card">'
+        + '<h3 style="font-size:18px;">Send this to your group</h3>'
+        + '<p style="color:var(--ink-soft);font-size:14px;">Share the poll code below along with the link to this page (already included in the message below).</p>'
+        + '<div class="actions-row" style="margin-top:6px;">'
+          + '<span class="code-display">'+poll.code+'</span>'
+          + '<button class="btn secondary small" data-action="copy-code">Copy code</button>'
+          + (state.copyMsg ? '<span class="copy-feedback">'+esc(state.copyMsg)+'</span>' : '')
+        + '</div>'
+        + '<div class="share-box">'
+          + '<label style="margin-top:0;">Email / Slack message</label>'
+          + '<textarea id="share-message" style="min-height:120px;">'+esc(shareMessageTemplate(poll))+'</textarea>'
+          + '<div class="actions-row" style="margin-top:10px;">'
+            + '<button class="btn secondary small" data-action="copy-message">Copy message</button>'
+          + '</div>'
+        + '</div>'
+      + '</div>'
+      + '<div class="actions-row">'
+        + '<button class="btn" data-action="go-respond-from-results">Mark my own availability</button>'
+        + '<button class="btn secondary" data-action="view-results-from-respond">View results so far</button>'
+      + '</div>'
+      + '<p class="field-hint" style="margin-top:10px;">Want to make sure everything works before sending this out? Open the poll, and on the name screen use the <b>Test A / Test B / Test C</b> quick-fill buttons to add a couple of dummy responses, then check Results. Clear them from Results when you\'re done.</p>';
+  }
+ 
+  function viewRespond(){
+    const poll = state.poll;
+    if(!poll) return '<div class="empty-note">Loading poll&hellip;</div>';
+    const fineSlots = buildFineSlots(poll);
+    const meetingMinutes = slotMinutesFor(poll);
+    let gridHtml = '';
+    if(poll.durationType==='allday'){
+      gridHtml = '<div class="allday-row">' + poll.dates.map(function(dObj){
+        const lbl = formatDateLabel(dObj.date);
+        const filled = state.mySelections.has(dObj.date+'|allday');
+        return '<div class="allday-chip'+(filled?' filled':'')+'" data-slot="'+dObj.date+'|allday" data-action="cell">'
+          +'<span class="dow">'+lbl.dow+'</span><span class="dnum">'+lbl.main+'</span></div>';
+      }).join('') + '</div>';
+    } else {
+      gridHtml = '<div class="grid-wrapper paint-grid"><table class="sched"><thead><tr><th></th>'
+        + poll.dates.map(function(dObj){ const lbl=formatDateLabel(dObj.date); return '<th><span class="dow">'+lbl.dow+'</span>'+lbl.main+'</th>'; }).join('')
+        + '</tr></thead><tbody>'
+        + fineSlots.map(function(t){
+            const kind = rowKind(t);
+            const label = kind==='hour' ? minutesToLabel(t) : '';
+            return '<tr class="row-'+kind+'"><th>'+label+'</th>' + poll.dates.map(function(dObj){
+              if(!isSlotValidForDate(dObj, t)){
+                return '<td class="cell offday" title="Not offered this day"></td>';
+              }
+              const slotId = dObj.date+'|'+t;
+              const filled = state.mySelections.has(slotId);
+              return '<td class="cell'+(filled?' filled':'')+'" data-slot="'+slotId+'" data-action="cell" title="'+minutesToLabel(t)+'"></td>';
+            }).join('') + '</tr>';
+          }).join('')
+        + '</tbody></table></div>';
+    }
+ 
+    const identityBlock = state.identityLocked ? '' : (''
+      +'<div class="card">'
+        +'<p class="eyebrow">Who\'s responding</p>'
+        +'<div class="field"><label>Your name</label><input type="text" id="r-yourname" placeholder="e.g. Jane Smith" value="'+esc(state.yourName)+'"></div>'
+        +'<div class="toggle-row">'
+          +'<input type="checkbox" id="r-proxy" '+(state.isProxy?'checked':'')+'>'
+          +'<label for="r-proxy">I\'m filling this out on behalf of someone else</label>'
+        +'</div>'
+        +(state.isProxy ? '<div class="field"><label>Their name (whose availability this is)</label><input type="text" id="r-proxyname" placeholder="e.g. Barbara Will" value="'+esc(state.proxyName)+'"></div>' : '')
+        +(state.createError ? '<p class="error-text">'+esc(state.createError)+'</p>' : '')
+        +'<button class="btn" data-action="lock-identity">Continue to poll</button>'
+        +'<div class="quick-test-row"><span class="qt-label">Testing this poll before sending it out? Quick-fill a dummy respondent:</span>'
+          +'<button class="btn secondary tiny" data-action="quick-test-identity" data-val="A">Test A</button>'
+          +'<button class="btn secondary tiny" data-action="quick-test-identity" data-val="B">Test B</button>'
+          +'<button class="btn secondary tiny" data-action="quick-test-identity" data-val="C">Test C</button>'
+        +'</div>'
+      +'</div>'
+    );
+ 
+    const gridSection = state.identityLocked ? (''
+      +'<div class="card">'
+        +'<p class="eyebrow">Marking availability for &nbsp;<b style="color:var(--green-deep);">'+esc(state.isProxy?state.proxyName:state.yourName)+'</b>'+(state.isProxy?' <span style="color:var(--bonfire);font-family:var(--font-mono);font-size:12px;">(submitted by '+esc(state.yourName)+')</span>':'')+(state.isTestIdentity?' <span style="color:var(--bonfire);font-family:var(--font-mono);font-size:12px;">(test response)</span>':'')+'</p>'
+        +'<h3 style="font-size:18px;margin-bottom:4px;">Click, or click and drag, to mark when you\'re free.</h3>'
+        + (poll.durationType!=='allday' ? '<p class="field-hint" style="margin-top:-2px;">Mark every 15 minutes you\'re free &mdash; even if it\'s a longer stretch than the '+formatMinutesLabel(meetingMinutes)+' meeting needs. That way the organizer can see every possible starting time within your free time, not just one fixed slot.</p>' : '')
+        + gridHtml
+        + (poll.durationType!=='allday' ? '<p class="grid-hint">Hatched cells aren\'t offered that day.</p>' : '')
+        +'<p class="grid-hint">Selections save automatically &mdash; no submit button needed.</p>'
+        +'<p class="save-status '+(state.saveState==='saving'?'saving':state.saveState==='saved'?'saved':'')+'">'
+          + (state.saveState==='saving' ? 'Saving&hellip;' : state.saveState==='saved' ? ('Saved &check; '+nowStamp()) : 'Not yet saved')
+        +'</p>'
+        +'<div class="actions-row">'
+          +'<button class="btn secondary small" data-action="change-identity">Change name</button>'
+          +'<button class="btn secondary small" data-action="view-results-from-respond">View results so far</button>'
+        +'</div>'
+      +'</div>'
+    ) : '';
+ 
+    return pollRibbon(poll, {eyebrow:'You\'re marking availability', showShare:true}) + identityBlock + gridSection;
+  }
+ 
+  function viewResults(){
+    const poll = state.poll;
+    if(!poll) return '<div class="empty-note">Loading poll&hellip;</div>';
+    const responses = state.allResponses;
+    const fineSlots = buildFineSlots(poll);
+    const counts = {};
+    responses.forEach(function(r){ (r.selections||[]).forEach(function(s){ counts[s]=(counts[s]||0)+1; }); });
+    const total = responses.length;
+    let maxCount = 0;
+    Object.keys(counts).forEach(function(k){ if(counts[k]>maxCount) maxCount=counts[k]; });
+ 
+    function namesFor(slotId){
+      return responses.filter(function(r){ return (r.selections||[]).includes(slotId); })
+        .map(function(r){ return r.displayName; });
+    }
+    function slotLabel(id){
+      const parts = id.split('|');
+      const lbl = formatDateLabel(parts[0]);
+      const timePart = parts[1]==='allday' ? 'All day' : minutesToLabel(Number(parts[1]));
+      return lbl.dow+' '+lbl.main+' &middot; '+timePart;
+    }
+ 
+    // best matching meeting-length windows (handles overlapping start times, e.g. 10:00-10:45 AND 10:15-11:00)
+    const isAllDay = poll.durationType==='allday';
+    const meetingMinutes = slotMinutesFor(poll);
+    const ranked = bestMeetingWindows(poll, responses, 5);
+ 
+    function windowLabel(item){
+      const lbl = formatDateLabel(item.date);
+      const timePart = isAllDay ? 'All day' : (minutesToLabel(item.start)+'&ndash;'+minutesToLabel(item.end));
+      return lbl.dow+' '+lbl.main+' &middot; '+timePart;
+    }
+ 
+    let bestHtml = '<div class="empty-note">No responses yet &mdash; share the poll code to get started.</div>';
+    if(ranked.length){
+      bestHtml = '<div class="best-list">' + ranked.map(function(r,i){
+        return '<div class="best-item'+(i===0?' top':'')+'"><span class="when">'+windowLabel(r)+'</span><span class="count">'+r.count+' of '+total+' free</span></div>';
+      }).join('') + '</div>';
+    }
+ 
+    let gridHtml = '';
+    if(isAllDay){
+      gridHtml = '<div class="allday-row">' + poll.dates.map(function(dObj){
+        const lbl = formatDateLabel(dObj.date); const c = counts[dObj.date+'|allday']||0;
+        const heat = maxCount>0 ? c/maxCount : 0;
+        const isBest = c===maxCount && c>0;
+        return '<div class="allday-chip'+(heat>0?' filled':'')+(isBest?' best':'')+'" style="opacity:'+(heat>0?(0.35+0.65*heat):1)+'" data-slot="'+dObj.date+'|allday'+'" data-action="show-names">'
+          +'<span class="dow">'+lbl.dow+'</span><span class="dnum">'+lbl.main+'</span><div style="font-size:11px;margin-top:4px;">'+c+'/'+total+'</div></div>';
+      }).join('') + '</div>';
+    } else {
+      gridHtml = '<div class="grid-wrapper paint-grid"><table class="sched"><thead><tr><th></th>'
+        + poll.dates.map(function(dObj){ const lbl=formatDateLabel(dObj.date); return '<th><span class="dow">'+lbl.dow+'</span>'+lbl.main+'</th>'; }).join('')
+        + '</tr></thead><tbody>'
+        + fineSlots.map(function(t){
+            const kind = rowKind(t);
+            const label = kind==='hour' ? minutesToLabel(t) : '';
+            return '<tr class="row-'+kind+'"><th>'+label+'</th>' + poll.dates.map(function(dObj){
+              if(!isSlotValidForDate(dObj, t)){
+                return '<td class="cell offday" title="Not offered this day"></td>';
+              }
+              const slotId = dObj.date+'|'+t;
+              const c = counts[slotId]||0;
+              const heat = maxCount>0 ? c/maxCount : 0;
+              const isBest = c===maxCount && c>0;
+              const style = c>0 ? 'style="opacity:'+(0.3+0.7*heat)+'"' : '';
+              return '<td class="cell'+(c>0?' filled':' heat0')+(isBest?' best':'')+'" '+style+' data-slot="'+slotId+'" data-action="show-names" title="'+minutesToLabel(t)+' &mdash; '+c+' of '+total+' free"></td>';
+            }).join('') + '</tr>';
+          }).join('')
+        + '</tbody></table></div>';
+    }
+ 
+    let tooltipHtml = '';
+    if(state.activeCellInfo){
+      const names = namesFor(state.activeCellInfo.slot);
+      tooltipHtml = '<div class="tooltip-panel">'
+        +'<span class="who">'+slotLabel(state.activeCellInfo.slot)+'</span> &mdash; '
+        + (names.length ? esc(names.join(', ')) : 'No one yet')
+      +'</div>';
+    }
+ 
+    const respondentPills = responses.map(function(r){
+      return '<span class="respondent-pill'+(r.isTest?' test':'')+'">'+esc(r.displayName)+(r.isProxy?' <span class="proxy">(via '+esc(r.submittedBy)+')</span>':'')+(r.isTest?' <span class="test-tag">(test)</span>':'')+'</span>';
+    }).join('');
+ 
+    const testCount = responses.filter(function(r){ return r.isTest; }).length;
+    const testBanner = testCount ? (''
+      +'<div class="test-banner">'
+        +'<span><b>'+testCount+' test response'+(testCount===1?'':'s')+'</b> included below &mdash; clear '+(testCount===1?'it':'them')+' before sharing this poll for real.</span>'
+        +'<button class="btn secondary tiny" data-action="clear-test-responses">Clear test responses</button>'
+      +'</div>'
+    ) : '';
+ 
+    return testBanner + pollRibbon(poll, {eyebrow:'Results', showShare:true})
+      + '<div class="card">'
+        + '<h3 style="font-size:18px;">Best matching times</h3>'
+        + (isAllDay ? '' : '<p class="grid-hint" style="margin-top:0;">Every possible '+formatMinutesLabel(meetingMinutes)+' start time is checked, spaced 15 minutes apart &mdash; so 10:00&ndash;10:45 and 10:15&ndash;11:00 both show up separately if people are free for either.</p>')
+        + bestHtml
+      + '</div>'
+      + '<div class="card">'
+        + '<h3 style="font-size:18px;margin-bottom:4px;">Availability grid</h3>'
+        + '<p class="grid-hint">Darker means more people are free at that exact 15-minute mark. Click any cell to see who. Hatched cells aren\'t offered that day.</p>'
+        + gridHtml
+        + '<div class="legend"><span class="legend-swatch" style="background:#fff;"></span> none'
+          + '<span class="legend-swatch" style="background:var(--green);opacity:0.5;"></span> some'
+          + '<span class="legend-swatch" style="background:var(--green);"></span> most/all</div>'
+        + tooltipHtml
+      + '</div>'
+      + '<div class="card">'
+        + '<h3 style="font-size:16px;">'+total+' response'+(total===1?'':'s')+'</h3>'
+        + (respondentPills ? '<div class="respondent-list">'+respondentPills+'</div>' : '<p class="empty-note">No one has responded yet.</p>')
+      + '</div>'
+      + '<div class="actions-row">'
+        + '<button class="btn secondary" data-action="go-respond-from-results">Go mark availability</button>'
+      + '</div>';
+  }
+ 
+  // ---------- actions ----------
+  async function goHome(){
+    state.view='home'; state.joinError=''; state.editingCode=null;
+    render();
+    state.recentPolls = await loadRecentPolls();
+    render();
+  }
+ 
+  function attachHandlers(){
+    app.addEventListener('click', onClick, {once:false});
+    setupGridPainting();
+    setupCreatePainting();
+  }
+ 
+  function onClick(e){
+    const el = e.target.closest('[data-action]');
+    if(!el) return;
+    const action = el.getAttribute('data-action');
+ 
+    if(action==='dismiss-error'){
+      app.removeEventListener('click', onClick);
+      state.lastError=''; render(); return;
+    }
+    if(action==='go-home'){ app.removeEventListener('click', onClick); flushPendingSave().then(goHome); return; }
+    if(action==='cancel-edit'){
+      app.removeEventListener('click', onClick);
+      state.editingCode = null; state.createError='';
+      loadAllResponses(state.code).then(function(resps){
+        state.allResponses = resps; state.activeCellInfo=null;
+        state.view='results'; render();
+      });
+      return;
+    }
+    if(action==='new-poll'){
+      app.removeEventListener('click', onClick);
+      state.editingCode = null;
+      state.form = {
+        title:'', location:'', details:'',
+        durationType:'60', customMinutes:30,
+        weekStart: startOfWeekStr(new Date()),
+        dayStart: DEFAULT_DAY_START, dayEnd: DEFAULT_DAY_END,
+        hoursCustomizeOpen:true, showWeekends:false,
+        paintSelections:new Set()
+      };
+      state.view='create'; state.createError=''; render(); return;
+    }
+ 
+    if(action==='join-code'){
+      app.removeEventListener('click', onClick);
+      const val = document.getElementById('join-code').value.trim().toUpperCase();
+      state.joinCode = val;
+      if(!val){ state.joinError='Enter a poll code.'; render(); return; }
+      loadPoll(val).then(function(poll){
+        if(!poll){ state.joinError='No poll found with that code.'; render(); return; }
+        state.poll = poll; state.code = val; state.joinError='';
+        state.view='respond'; state.identityLocked=false; state.mySelections=new Set();
+        render();
+        rememberPoll(poll);
+      });
+      return;
+    }
+ 
+    if(action==='open-recent'){
+      app.removeEventListener('click', onClick);
+      const val = el.getAttribute('data-val');
+      loadPoll(val).then(function(poll){
+        if(!poll){
+          state.recentPolls = state.recentPolls.filter(function(p){ return p.code!==val; });
+          saveRecentPolls(state.recentPolls);
+          state.joinError='That poll no longer exists — it\'s been removed from your recent list.';
+          render();
+          return;
+        }
+        state.poll = poll; state.code = val; state.joinError='';
+        state.view='respond'; state.identityLocked=false; state.mySelections=new Set();
+        render();
+        rememberPoll(poll);
+      });
+      return;
+    }
+    if(action==='remove-recent'){
+      app.removeEventListener('click', onClick);
+      const val = el.getAttribute('data-val');
+      state.recentPolls = state.recentPolls.filter(function(p){ return p.code!==val; });
+      saveRecentPolls(state.recentPolls);
+      render();
+      return;
+    }
+ 
+    if(action==='go-share'){
+      app.removeEventListener('click', onClick);
+      flushPendingSave().then(function(){ state.view='share'; state.copyMsg=''; render(); });
+      return;
+    }
+ 
+    if(action==='edit-poll'){
+      app.removeEventListener('click', onClick);
+      state.form = formFromPoll(state.poll);
+      state.editingCode = state.poll.code;
+      state.createError = '';
+      state.view = 'create';
+      render();
+      return;
+    }
+ 
+    if(action==='copy-code'){
+      app.removeEventListener('click', onClick);
+      copyText(state.poll.code).then(function(ok){
+        state.copyMsg = ok ? 'Copied.' : 'Copy failed — select the code manually.';
+        render();
+        setTimeout(function(){ state.copyMsg=''; render(); }, 2500);
+      });
+      return;
+    }
+    if(action==='copy-message'){
+      app.removeEventListener('click', onClick);
+      const ta = document.getElementById('share-message');
+      const text = ta ? ta.value : shareMessageTemplate(state.poll);
+      copyText(text).then(function(ok){
+        state.copyMsg = ok ? 'Message copied.' : 'Copy failed — select the text manually.';
+        render();
+        setTimeout(function(){ state.copyMsg=''; render(); }, 2500);
+      });
+      return;
+    }
+ 
+    if(action==='set-duration'){
+      app.removeEventListener('click', onClick);
+      state.form.durationType = el.getAttribute('data-val');
+      render(); return;
+    }
+ 
+    if(action==='prev-week'){
+      app.removeEventListener('click', onClick);
+      state.form.weekStart = addDaysStr(state.form.weekStart, -7);
+      render(); return;
+    }
+    if(action==='next-week'){
+      app.removeEventListener('click', onClick);
+      state.form.weekStart = addDaysStr(state.form.weekStart, 7);
+      render(); return;
+    }
+    if(action==='today-week'){
+      app.removeEventListener('click', onClick);
+      state.form.weekStart = startOfWeekStr(new Date());
+      render(); return;
+    }
+    if(action==='jump-week'){
+      app.removeEventListener('click', onClick);
+      const val = document.getElementById('f-jump-date').value;
+      if(val){ state.form.weekStart = startOfWeekStr(parseDate(val)); }
+      render(); return;
+    }
+    if(action==='toggle-weekends'){
+      app.removeEventListener('click', onClick);
+      state.form.showWeekends = !state.form.showWeekends;
+      render(); return;
+    }
+    if(action==='toggle-customize-hours'){
+      app.removeEventListener('click', onClick);
+      syncCreateFormFromDom();
+      state.form.hoursCustomizeOpen = !state.form.hoursCustomizeOpen;
+      render(); return;
+    }
+    if(action==='hours-preset'){
+      app.removeEventListener('click', onClick);
+      state.form.dayStart = Number(el.getAttribute('data-start'));
+      state.form.dayEnd = Number(el.getAttribute('data-end'));
+      render(); return;
+    }
+    if(action==='clear-date-paint'){
+      app.removeEventListener('click', onClick);
+      const val = el.getAttribute('data-val');
+      const toDelete = [];
+      state.form.paintSelections.forEach(function(id){ if(id.slice(0,id.indexOf('|'))===val) toDelete.push(id); });
+      toDelete.forEach(function(id){ state.form.paintSelections.delete(id); });
+      render(); return;
+    }
+ 
+    if(action==='create-poll'){
+      app.removeEventListener('click', onClick);
+      syncCreateFormFromDom();
+      const f = state.form;
+      if(!f.title.trim()){ state.createError='Give the poll a title.'; render(); return; }
+      const isAllDay = f.durationType==='allday';
+      const dates = datesFromPaintSelections(f.paintSelections, isAllDay);
+      if(dates.length===0){
+        state.createError = isAllDay ? 'Mark at least one date on the calendar.' : 'Mark at least one date and time block on the calendar.';
+        render(); return;
+      }
+      const isEditing = !!state.editingCode;
+      const prior = isEditing ? state.poll : null;
+      const poll = {
+        code: isEditing ? state.editingCode : uid(6),
+        title: f.title.trim(),
+        location: f.location.trim(),
+        details: f.details.trim(),
+        durationType: f.durationType,
+        customMinutes: f.customMinutes,
+        dates: dates,
+        createdAt: isEditing && prior ? prior.createdAt : Date.now(),
+        updatedAt: isEditing ? Date.now() : undefined
+      };
+      savePoll(poll).then(function(){
+        state.poll = poll; state.code = poll.code; state.editingCode = null;
+        state.identityLocked=false; state.mySelections=new Set();
+        state.view='share'; state.createError=''; state.copyMsg='';
+        render();
+        rememberPoll(poll);
+      });
+      return;
+    }
+ 
+    if(action==='lock-identity'){
+      app.removeEventListener('click', onClick);
+      const yn = document.getElementById('r-yourname').value.trim();
+      const isProxy = document.getElementById('r-proxy').checked;
+      const pn = isProxy ? (document.getElementById('r-proxyname') ? document.getElementById('r-proxyname').value.trim() : '') : '';
+      if(!yn){ state.createError='Enter your name.'; render(); return; }
+      if(isProxy && !pn){ state.createError='Enter the name of the person you\'re responding for.'; render(); return; }
+      state.yourName = yn; state.isProxy = isProxy; state.proxyName = pn; state.createError=''; state.isTestIdentity=false;
+      const displayName = isProxy ? pn : yn;
+      const slug = slugify(displayName);
+      loadResponse(state.code, slug).then(function(existing){
+        state.mySelections = new Set(existing ? (existing.selections||[]) : []);
+        state.identityLocked = true;
+        state.saveState = existing ? 'saved' : 'idle';
+        render();
+      });
+      return;
+    }
+    if(action==='quick-test-identity'){
+      app.removeEventListener('click', onClick);
+      const letter = el.getAttribute('data-val');
+      const yn = 'Test '+letter;
+      state.yourName = yn; state.isProxy = false; state.proxyName = ''; state.createError=''; state.isTestIdentity = true;
+      const slug = slugify(yn);
+      loadResponse(state.code, slug).then(function(existing){
+        state.mySelections = new Set(existing ? (existing.selections||[]) : []);
+        state.identityLocked = true;
+        state.saveState = existing ? 'saved' : 'idle';
+        render();
+      });
+      return;
+    }
+    if(action==='change-identity'){
+      app.removeEventListener('click', onClick);
+      flushPendingSave().then(function(){ state.identityLocked=false; render(); });
+      return;
+    }
+ 
+    if(action==='view-results-from-respond' || action==='go-respond-from-results'){
+      app.removeEventListener('click', onClick);
+      if(action==='view-results-from-respond'){
+        flushPendingSave().then(function(){ return loadAllResponses(state.code); }).then(function(resps){
+          state.allResponses = resps; state.activeCellInfo=null;
+          state.view='results'; render();
+        });
+      } else {
+        state.view='respond'; render();
+      }
+      return;
+    }
+ 
+    if(action==='show-names'){
+      app.removeEventListener('click', onClick);
+      state.activeCellInfo = { slot: el.getAttribute('data-slot') };
+      render();
+      return;
+    }
+ 
+    if(action==='clear-test-responses'){
+      app.removeEventListener('click', onClick);
+      const testResps = state.allResponses.filter(function(r){ return r.isTest; });
+      Promise.all(testResps.map(function(r){ return storDelete('resp:'+state.code+':'+slugify(r.displayName)); }))
+        .then(function(){ return loadAllResponses(state.code); })
+        .then(function(resps){
+          state.allResponses = resps; state.activeCellInfo=null;
+          render();
+        });
+      return;
+    }
+ 
+    if(action==='cell' || action==='paintcell'){
+      // handled by painting logic (mousedown), click fallback for simple taps
+      return;
+    }
+  }
+ 
+  async function copyText(text){
+    try{ await navigator.clipboard.writeText(text); return true; }catch(e){ return false; }
+  }
+ 
+  function syncCreateFormFromDom(){
+    const f = state.form;
+    f.title = document.getElementById('f-title') ? document.getElementById('f-title').value : f.title;
+    f.location = document.getElementById('f-location') ? document.getElementById('f-location').value : f.location;
+    f.details = document.getElementById('f-details') ? document.getElementById('f-details').value : f.details;
+    if(document.getElementById('f-custom-min')) f.customMinutes = Number(document.getElementById('f-custom-min').value)||30;
+  }
+ 
+  // live-sync a few text inputs without full re-render (avoid losing focus)
+  function liveBind(id, target, key){
+    const el = document.getElementById(id);
+    if(el){
+      el.addEventListener('input', function(){ target[key] = el.value; });
+      el.addEventListener('change', function(){ target[key] = el.value; });
+    }
+  }
+ 
+  // ---------- drag painting: RESPOND grid (saves to shared storage) ----------
+  let isPainting = false, paintValue = true;
+  let saveTimer = null;
+  let pendingSavePromise = null;
+ 
+  function performSaveNow(){
+    const displayName = state.isProxy ? state.proxyName : state.yourName;
+    const slug = slugify(displayName);
+    const data = {
+      displayName: displayName,
+      submittedBy: state.yourName,
+      isProxy: state.isProxy,
+      isTest: state.isTestIdentity,
+      selections: Array.from(state.mySelections),
+      updatedAt: Date.now()
+    };
+    state.saveState = 'saving';
+    const statusEl = app.querySelector('.save-status');
+    if(statusEl){ statusEl.textContent='Saving…'; statusEl.className='save-status saving'; }
+    pendingSavePromise = saveResponse(state.code, slug, data).then(function(result){
+      pendingSavePromise = null;
+      if(!result){ render(); return; } // failure — state.lastError was already set inside storSet, show it now
+      state.saveState = 'saved';
+      const el2 = app.querySelector('.save-status');
+      if(el2){ el2.textContent = 'Saved ✓ '+nowStamp(); el2.className='save-status saved'; }
+    });
+    return pendingSavePromise;
+  }
+ 
+  function scheduleSave(){
+    state.saveState = 'saving';
+    const statusEl = app.querySelector('.save-status');
+    if(statusEl){ statusEl.textContent='Saving…'; statusEl.className='save-status saving'; }
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function(){ saveTimer = null; performSaveNow(); }, 550);
+  }
+ 
+  // Call before navigating away from the respond screen so we never read results before our own
+  // just-painted answer has actually finished writing to the database.
+  async function flushPendingSave(){
+    if(saveTimer){ clearTimeout(saveTimer); saveTimer = null; await performSaveNow(); return; }
+    if(pendingSavePromise){ await pendingSavePromise; }
+  }
+ 
+  function applyCell(cellEl, val){
+    const slot = cellEl.getAttribute('data-slot');
+    if(val) state.mySelections.add(slot); else state.mySelections.delete(slot);
+    cellEl.classList.toggle('filled', val);
+    scheduleSave();
+  }
+ 
+  function setupGridPainting(){
+    if(state.view!=='respond' || !state.identityLocked) return;
+    const container = app;
+    const cells = container.querySelectorAll('[data-action="cell"]');
+    if(!cells.length) return;
+ 
+    cells.forEach(function(cell){
+      cell.addEventListener('mousedown', function(e){
+        e.preventDefault();
+        isPainting = true;
+        paintValue = !cell.classList.contains('filled');
+        applyCell(cell, paintValue);
+      });
+      cell.addEventListener('mouseenter', function(e){
+        if(!isPainting) return;
+        if(e.buttons !== 1){ isPainting = false; return; }
+        applyCell(cell, paintValue);
+      });
+      cell.addEventListener('touchstart', function(e){
+        e.preventDefault();
+        isPainting = true;
+        paintValue = !cell.classList.contains('filled');
+        applyCell(cell, paintValue);
+      }, {passive:false});
+    });
+ 
+    container.addEventListener('touchmove', function(e){
+      if(!isPainting) return;
+      e.preventDefault();
+      const t = e.touches[0];
+      const el = document.elementFromPoint(t.clientX, t.clientY);
+      const cellEl = el ? el.closest('[data-action="cell"]') : null;
+      if(cellEl) applyCell(cellEl, paintValue);
+    }, {passive:false});
+ 
+    window.addEventListener('mouseup', function(){ isPainting = false; }, {once:true});
+    window.addEventListener('touchend', function(){ isPainting = false; }, {once:true});
+  }
+ 
+  // ---------- drag painting: CREATE calendar (in-memory only, until Create Poll is clicked) ----------
+  let isPaintingCreate = false, createPaintValue = true;
+ 
+  function applyPaintCell(cellEl, val){
+    const slot = cellEl.getAttribute('data-slot');
+    if(val) state.form.paintSelections.add(slot); else state.form.paintSelections.delete(slot);
+    cellEl.classList.toggle('filled', val);
+  }
+ 
+  function refreshPaintSummary(){
+    const el = document.getElementById('paint-summary');
+    if(el) el.innerHTML = paintSummaryHtml(state.form);
+  }
+ 
+  function setupCreatePainting(){
+    if(state.view!=='create') return;
+    const container = app;
+    const cells = container.querySelectorAll('[data-action="paintcell"]');
+    if(!cells.length) return;
+ 
+    cells.forEach(function(cell){
+      cell.addEventListener('mousedown', function(e){
+        e.preventDefault();
+        isPaintingCreate = true;
+        createPaintValue = !cell.classList.contains('filled');
+        applyPaintCell(cell, createPaintValue);
+      });
+      cell.addEventListener('mouseenter', function(e){
+        if(!isPaintingCreate) return;
+        if(e.buttons !== 1){ isPaintingCreate = false; refreshPaintSummary(); return; }
+        applyPaintCell(cell, createPaintValue);
+      });
+      cell.addEventListener('touchstart', function(e){
+        e.preventDefault();
+        isPaintingCreate = true;
+        createPaintValue = !cell.classList.contains('filled');
+        applyPaintCell(cell, createPaintValue);
+      }, {passive:false});
+    });
+ 
+    container.addEventListener('touchmove', function(e){
+      if(!isPaintingCreate) return;
+      e.preventDefault();
+      const t = e.touches[0];
+      const el = document.elementFromPoint(t.clientX, t.clientY);
+      const cellEl = el ? el.closest('[data-action="paintcell"]') : null;
+      if(cellEl) applyPaintCell(cellEl, createPaintValue);
+    }, {passive:false});
+ 
+    window.addEventListener('mouseup', function(){ if(isPaintingCreate){ isPaintingCreate=false; refreshPaintSummary(); } }, {once:true});
+    window.addEventListener('touchend', function(){ if(isPaintingCreate){ isPaintingCreate=false; refreshPaintSummary(); } }, {once:true});
+  }
+ 
+  // bind live inputs after each render for smoother typing
+  const origRender = render;
+  render = function(){
+    origRender();
+    liveBind('f-title', state.form, 'title');
+    liveBind('f-location', state.form, 'location');
+    liveBind('f-details', state.form, 'details');
+    liveBind('join-code', state, 'joinCode');
+    liveBind('r-yourname', state, 'yourName');
+    liveBind('r-proxyname', state, 'proxyName');
+    const customSel = document.getElementById('f-custom-min');
+    if(customSel){ customSel.addEventListener('change', function(){ state.form.customMinutes = Number(customSel.value); }); }
+    const dayStartEl = document.getElementById('f-day-start');
+    const dayEndEl = document.getElementById('f-day-end');
+    if(dayStartEl){ dayStartEl.addEventListener('change', function(){
+      state.form.dayStart = timeToMinutes(dayStartEl.value||'07:00');
+      render();
+    }); }
+    if(dayEndEl){ dayEndEl.addEventListener('change', function(){
+      let mins = timeToMinutes(dayEndEl.value||'18:00');
+      if(mins===0) mins = 1440; // treat midnight-as-end to mean end of day
+      state.form.dayEnd = mins;
+      render();
+    }); }
+    const proxyBox = document.getElementById('r-proxy');
+    if(proxyBox){ proxyBox.addEventListener('change', function(){ state.isProxy = proxyBox.checked; render(); }); }
+  };
+ 
+  render();
+  loadRecentPolls().then(function(list){
+    state.recentPolls = list;
+    if(state.view==='home') render();
+  });
+})();
+</script>
+</body>
+</html>
