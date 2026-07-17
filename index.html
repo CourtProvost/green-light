@@ -1001,7 +1001,7 @@
       +'</div>'
     ) : '';
  
-    return pollRibbon(poll, {eyebrow:'You\'re marking availability', showShare:true}) + identityBlock + gridSection;
+    return pollRibbon(poll, {eyebrow:'You\'re marking availability'}) + identityBlock + gridSection;
   }
  
   function viewResults(){
@@ -1096,7 +1096,7 @@
       +'</div>'
     ) : '';
  
-    return testBanner + pollRibbon(poll, {eyebrow:'Results', showShare:true})
+    return testBanner + pollRibbon(poll, {eyebrow:'Results'})
       + '<div class="card">'
         + '<h3 style="font-size:18px;">Best matching times</h3>'
         + (isAllDay ? '' : '<p class="grid-hint" style="margin-top:0;">Every possible '+formatMinutesLabel(meetingMinutes)+' start time is checked, spaced 15 minutes apart &mdash; so 10:00&ndash;10:45 and 10:15&ndash;11:00 both show up separately if people are free for either.</p>')
