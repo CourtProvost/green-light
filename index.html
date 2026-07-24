@@ -975,6 +975,7 @@
         +(state.isProxy ? '<div class="field"><label>Their name (whose availability this is)</label><input type="text" id="r-proxyname" placeholder="e.g. Barbara Will" value="'+esc(state.proxyName)+'"></div>' : '')
         +(state.createError ? '<p class="error-text">'+esc(state.createError)+'</p>' : '')
         +'<button class="btn" data-action="lock-identity">Continue to poll</button>'
+        +'<button class="btn secondary" style="margin-left:8px;" data-action="view-results-from-respond">View results so far</button>'
         +'<div class="quick-test-row"><span class="qt-label">Testing this poll before sending it out? Quick-fill a dummy respondent:</span>'
           +'<button class="btn secondary tiny" data-action="quick-test-identity" data-val="A">Test A</button>'
           +'<button class="btn secondary tiny" data-action="quick-test-identity" data-val="B">Test B</button>'
